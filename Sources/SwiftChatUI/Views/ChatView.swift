@@ -7,6 +7,7 @@
 //
 
 
+#if canImport(UIKit)
 import SwiftUI
 import SwiftChatCore
 
@@ -339,3 +340,4 @@ extension Animation {
         }
     }
 }
+#endif

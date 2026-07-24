@@ -6,6 +6,7 @@
 //  Copyright © 2026 Sacha Servan-Schreiber. All rights reserved.
 //
 
+#if canImport(UIKit)
 import SwiftUI
 import SwiftChatCore
 
@@ -225,3 +226,4 @@ struct SourceRowView: View {
         UIApplication.shared.open(url)
     }
 }
+#endif

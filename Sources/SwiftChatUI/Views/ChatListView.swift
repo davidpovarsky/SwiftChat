@@ -6,6 +6,7 @@
 //  Copyright © 2026 Sacha Servan-Schreiber. All rights reserved.
 //
 
+#if canImport(UIKit)
 import SwiftUI
 import SwiftChatCore
 
@@ -166,3 +167,4 @@ struct ChatListView: View {
         NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
     }
 }
+#endif

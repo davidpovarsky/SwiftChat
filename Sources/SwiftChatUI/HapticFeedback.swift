@@ -1,3 +1,4 @@
+#if canImport(UIKit)
 import UIKit
 
 enum HapticFeedback {
@@ -21,3 +22,4 @@ enum HapticFeedback {
         }
     }
 }
+#endif

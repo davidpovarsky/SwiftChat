@@ -6,6 +6,7 @@
 //  Copyright © 2026 Sacha Servan-Schreiber. All rights reserved.
 //
 
+#if canImport(UIKit)
 import SwiftUI
 import Combine
 
@@ -47,3 +48,4 @@ class SettingsManager: ObservableObject {
         self.customSystemPrompt = UserDefaults.standard.string(forKey: "customSystemPrompt") ?? ""
     }
 }
+#endif

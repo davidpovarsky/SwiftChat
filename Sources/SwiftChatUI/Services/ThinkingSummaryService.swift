@@ -6,6 +6,7 @@
 //  Copyright © 2026 Sacha Servan-Schreiber. All rights reserved.
 //
 
+#if canImport(UIKit)
 import Foundation
 
 /// Service for generating thinking summaries during streaming.
@@ -61,3 +62,4 @@ class ThinkingSummaryService {
         currentSummary
     }
 }
+#endif

@@ -6,6 +6,7 @@
 //  Copyright © 2026 Sacha Servan-Schreiber. All rights reserved.
 //
 
+#if canImport(UIKit)
 import SwiftUI
 
 extension Color {
@@ -33,4 +34,5 @@ extension Color {
             opacity: Double(a) / 255
         )
     }
-} 
+}
+#endif

@@ -6,6 +6,7 @@
 //  Copyright © 2026 Sacha Servan-Schreiber. All rights reserved.
 //
 
+#if canImport(UIKit)
 import Network
 import Combine
 import SwiftUI
@@ -29,3 +30,4 @@ class NetworkMonitor: ObservableObject {
         monitor.cancel()
     }
 } 
+#endif

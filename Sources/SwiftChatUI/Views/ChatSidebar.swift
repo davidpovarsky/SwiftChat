@@ -6,6 +6,7 @@
 //  Copyright © 2026 Sacha Servan-Schreiber. All rights reserved.
 //
 
+#if canImport(UIKit)
 import SwiftUI
 import Combine
 import SwiftChatCore
@@ -240,3 +241,4 @@ struct ChatListItem: View {
         )
     }
 }
+#endif

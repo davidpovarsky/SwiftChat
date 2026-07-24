@@ -6,6 +6,7 @@
 //  Copyright © 2026 Sacha Servan-Schreiber. All rights reserved.
 //
 
+#if canImport(UIKit)
 import Foundation
 
 /// Application-wide constants
@@ -75,3 +76,4 @@ enum Constants {
         static let transcriptionModel = "whisper-1"
     }
 }
+#endif

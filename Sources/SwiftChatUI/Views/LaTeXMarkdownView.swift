@@ -6,6 +6,7 @@
 //  Copyright © 2026 Sacha Servan-Schreiber. All rights reserved.
 //
 
+#if canImport(UIKit)
 import SwiftUI
 import Textual
 import SwiftMath
@@ -17,7 +18,6 @@ private enum SegmentKind: Sendable {
     case latex(String, isDisplay: Bool)
     case table(ParsedTable)
 }
-
 
 
 private struct ContentSegment: Sendable {
@@ -1041,5 +1041,4 @@ struct MathView: UIViewRepresentable {
         uiView.sizeToFit()
     }
 }
-
-
+#endif

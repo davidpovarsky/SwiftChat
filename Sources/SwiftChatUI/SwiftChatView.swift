@@ -1,3 +1,4 @@
+#if canImport(UIKit)
 import SwiftUI
 import SwiftChatCore
 
@@ -65,3 +66,4 @@ public struct SwiftChatView: View {
 enum SwiftChatResources {
     static let bundle = Bundle.module
 }
+#endif

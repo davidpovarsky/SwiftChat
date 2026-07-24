@@ -6,6 +6,7 @@
 //  Copyright © 2026 Sacha Servan-Schreiber. All rights reserved.
 //
 
+#if canImport(UIKit)
 import SwiftUI
 import SwiftChatCore
 
@@ -170,3 +171,4 @@ private struct URLFetchSheetRow: View {
         UIApplication.shared.open(url)
     }
 }
+#endif

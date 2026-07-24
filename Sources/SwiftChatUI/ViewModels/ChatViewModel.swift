@@ -6,6 +6,7 @@
 //  Copyright © 2026 Sacha Servan-Schreiber. All rights reserved.
 //
 
+#if canImport(UIKit)
 import Foundation
 import Combine
 import SwiftUI
@@ -893,3 +894,4 @@ extension ChatViewModel {
         }
     }
 }
+#endif

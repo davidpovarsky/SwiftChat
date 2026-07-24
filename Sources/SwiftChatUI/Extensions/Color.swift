@@ -6,6 +6,7 @@
 //  Copyright © 2026 Sacha Servan-Schreiber. All rights reserved.
 //
 
+#if canImport(UIKit)
 import SwiftUI
 import UIKit
 
@@ -101,3 +102,4 @@ extension Color {
         isDarkMode ? actionButtonBackgroundDark : actionButtonBackgroundLight
     }
 }
+#endif

@@ -6,6 +6,7 @@
 //  Copyright © 2026 Sacha Servan-Schreiber. All rights reserved.
 //
 
+#if canImport(UIKit)
 import SwiftUI
 
 /// Centralized theme and design system for the app
@@ -61,3 +62,4 @@ enum Theme {
         static let springDampingHigh: Double = 0.9
     }
 } 
+#endif

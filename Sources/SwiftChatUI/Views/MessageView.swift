@@ -6,6 +6,7 @@
 //  Copyright © 2026 Sacha Servan-Schreiber. All rights reserved.
 //
 
+#if canImport(UIKit)
 import SwiftUI
 import Textual
 import SwiftMath
@@ -1442,3 +1443,4 @@ private struct SourcesSheetView: View {
         .preferredColorScheme(isDarkMode ? .dark : .light)
     }
 }
+#endif

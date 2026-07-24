@@ -6,6 +6,7 @@
 //  Copyright © 2026 Sacha Servan-Schreiber. All rights reserved.
 //
 
+#if canImport(UIKit)
 import SwiftUI
 import UIKit
 import PhotosUI
@@ -646,3 +647,4 @@ struct CustomTextEditor: UIViewRepresentable {
         }
     }
 }
+#endif
