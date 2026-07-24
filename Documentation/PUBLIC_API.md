@@ -10,7 +10,9 @@ SwiftChat exposes four products:
   behavior.
 - `SwiftChat`: an umbrella product that re-exports all three modules.
 
-The minimum supported platform is iOS 18.
+The complete UI supports iOS 18 and later. The manifest declares macOS 15 so
+Core-only validation can resolve all package dependencies on macOS; the
+upstream UIKit UI is not a macOS interface.
 
 ## Full OpenAI chat
 

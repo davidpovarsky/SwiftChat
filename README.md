@@ -5,8 +5,10 @@ This repository is a fork of
 the original application and makes the same chat UI, streaming controller,
 rendering, and OpenAI behavior available through Swift Package Manager.
 
-The package requires iOS 18 or later. Until a release tag is published, depend
-on the package-conversion branch:
+The complete UI requires iOS 18 or later. The manifest also declares macOS 15
+so provider-neutral Core builds and tests can resolve the dependency graph on
+macOS CI; the upstream UIKit interface remains iOS-only. Until a release tag is
+published, depend on the package-conversion branch:
 
 ```swift
 .package(
