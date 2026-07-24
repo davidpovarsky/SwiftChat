@@ -1,3 +1,88 @@
+# SwiftChat Swift Package fork
+
+This repository is a fork of
+[sachaservan/SwiftChat](https://github.com/sachaservan/SwiftChat). It preserves
+the original application and makes the same chat UI, streaming controller,
+rendering, and OpenAI behavior available through Swift Package Manager.
+
+The package requires iOS 18 or later. Until a release tag is published, depend
+on the package-conversion branch:
+
+```swift
+.package(
+    url: "https://github.com/davidpovarsky/SwiftChat.git",
+    branch: "codex/package-swiftchat-ui-complete-20260724"
+)
+```
+
+Choose the smallest product that fits the host:
+
+| Product | Use |
+| --- | --- |
+| `SwiftChatCore` | Models, provider/store protocols, events, context, tools |
+| `SwiftChatUI` | Original UI with a custom or mock provider |
+| `SwiftChatOpenAI` | OpenAI-compatible Responses API and transcription adapter |
+| `SwiftChat` | Full convenience product that re-exports all modules |
+
+## Package quick start
+
+```swift
+import SwiftUI
+import SwiftChat
+
+struct ContentView: View {
+    @StateObject private var session: SwiftChatSession
+
+    init(apiKey: String) {
+        let provider = OpenAIResponsesProvider(
+            configuration: .init(apiKey: apiKey)
+        )
+        _session = StateObject(
+            wrappedValue: SwiftChatSession(
+                provider: provider,
+                transcriptionProvider: provider
+            )
+        )
+    }
+
+    var body: some View {
+        SwiftChatView(session: session)
+    }
+}
+```
+
+The UI-only path imports `SwiftChatCore` and `SwiftChatUI`, then injects any
+`SwiftChatProvider`. `MockSwiftChatProvider` and
+`InMemoryConversationStore` are included for previews and tests.
+
+`SwiftChatView` is embeddable and works directly in a host `.inspector`,
+`.sheet`, full-screen cover, navigation destination, or app root. It does not
+add a package-owned Done button. The initializer accepts `SwiftChatHostContext`
+and `SwiftChatTheme` through the session/root API.
+
+See:
+
+- [Public API](Documentation/PUBLIC_API.md)
+- [Package example](Examples/PackageExample)
+- [Upstream architecture](Documentation/UPSTREAM_ARCHITECTURE.md)
+- [Upstream sync policy](Documentation/UPSTREAM_SYNC.md)
+
+Known limitations:
+
+- The package UI is iOS-only because upstream is built on UIKit.
+- Upstream history is in-memory; inject a custom
+  `SwiftChatConversationStore` for durability.
+- Upstream advertises PDFs, but its document reader only decodes UTF-8 text.
+- Generic tool cards were not part of upstream. Core exposes tool contracts and
+  the example shows a host-owned card without claiming native upstream support.
+- The original app continues to use `UserDefaults` for its example API-key
+  prompt. Production hosts should use Keychain or another credential provider.
+
+The fork follows upstream through merge commits on the package branch and never
+keeps a second copy of the shared UI. See `NOTICE.md` and `LICENSE`.
+
+---
+
 <p><h1>SwiftChat</h1></p>
 <p><h4>A production-ready iOS chat template powered by the OpenAI Responses API, built with SwiftUI</h4></p>
 
