@@ -28,7 +28,7 @@ public struct OpenAIResponsesProvider: SwiftChatProvider, SwiftChatTranscription
                         case .outputText(.delta(let value)):
                             continuation.yield(.outputTextDelta(value.delta))
                         case .reasoning(.delta(let value)):
-                            if let text = (value.delta.value as? [String: Any])?["text"] as? String {
+                            if let text = Self.reasoningText(from: value.delta) {
                                 continuation.yield(.reasoningDelta(text))
                             }
                         case .outputTextAnnotation(.added(let value)):
@@ -94,6 +94,23 @@ public struct OpenAIResponsesProvider: SwiftChatProvider, SwiftChatTranscription
                 basePath: configuration.basePath
             )
         )
+    }
+
+    /// OpenAI's generated schema has represented reasoning deltas as both a
+    /// string and an object container across generator/toolchain combinations.
+    /// Decode through Encodable so both representations preserve their text.
+    private static func reasoningText<Delta: Encodable>(from delta: Delta) -> String? {
+        guard
+            let data = try? JSONEncoder().encode(delta),
+            let value = try? JSONSerialization.jsonObject(with: data)
+        else {
+            return nil
+        }
+
+        if let text = value as? String {
+            return text
+        }
+        return (value as? [String: Any])?["text"] as? String
     }
 
     private static func map(_ error: Error) -> Error {
