@@ -310,4 +310,3 @@ will be compiled by SwiftPM, not separately by the app target.
 6. The upstream README claims MIT while omitting the license text. Attribution
    and the standard MIT text must be recorded without changing the declared
    license.
-
