@@ -7,9 +7,10 @@
 //
 
 import SwiftUI
+import SwiftChat
 
 struct ContentView: View {
-    @StateObject private var viewModel = ChatViewModel()
+    @State private var session: SwiftChatSession?
     @State private var showAPIKeyPrompt = false
     @State private var apiKeyInput = ""
 
@@ -19,13 +20,21 @@ struct ContentView: View {
     }
 
     var body: some View {
-        ChatContainer()
-            .environmentObject(viewModel)
+        Group {
+            if let session {
+                SwiftChatView(session: session)
+            } else {
+                ProgressView("Configuring SwiftChat…")
+            }
+        }
             .onAppear {
                 if let saved = UserDefaults.standard.string(forKey: "apiKey"), !saved.isEmpty {
                     AppConfig.shared.apiKey = saved
+                    session = makeSession()
                 } else if needsAPIKey {
                     showAPIKeyPrompt = true
+                } else {
+                    session = makeSession()
                 }
             }
             .alert("API Key Required", isPresented: $showAPIKeyPrompt) {
@@ -37,10 +46,29 @@ struct ContentView: View {
                     guard !trimmed.isEmpty else { return }
                     AppConfig.shared.apiKey = trimmed
                     UserDefaults.standard.set(trimmed, forKey: "apiKey")
+                    session = makeSession()
                 }
                 Button("Cancel", role: .cancel) {}
             } message: {
                 Text("Enter your API key to start chatting.")
             }
+    }
+
+    private func makeSession() -> SwiftChatSession {
+        let appConfig = AppConfig.shared
+        let configuration = SwiftChatConfiguration(
+            models: appConfig.availableModels,
+            defaultModelID: appConfig.currentModel.id,
+            titleModelID: appConfig.titleModel?.id,
+            systemPrompt: appConfig.systemPrompt,
+            rules: appConfig.rules,
+            webSearchEnabled: UserDefaults.standard.bool(forKey: "webSearchEnabled")
+        )
+        let provider = appConfig.provider()
+        return SwiftChatSession(
+            provider: provider,
+            configuration: configuration,
+            transcriptionProvider: provider
+        )
     }
 }
