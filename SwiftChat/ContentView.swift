@@ -7,7 +7,9 @@
 //
 
 import SwiftUI
-import SwiftChat
+import SwiftChatCore
+import SwiftChatOpenAI
+import SwiftChatUI
 
 struct ContentView: View {
     @State private var session: SwiftChatSession?

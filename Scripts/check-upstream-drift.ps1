@@ -84,8 +84,10 @@ $projectText = Get-Content -Raw -LiteralPath (Join-Path $repoRoot "SwiftChat.xco
 if ($projectText -notmatch "XCLocalSwiftPackageReference") {
     Add-DriftError "Xcode project does not reference the local root package."
 }
-if ($projectText -notmatch "productName = SwiftChat;") {
-    Add-DriftError "SwiftChat app target does not depend on the SwiftChat package product."
+foreach ($product in @("SwiftChatCore", "SwiftChatUI", "SwiftChatOpenAI")) {
+    if ($projectText -notmatch [regex]::Escape("productName = $product;")) {
+        Add-DriftError "SwiftChat app target does not depend on the $product package product."
+    }
 }
 if ($projectText -match "XCRemoteSwiftPackageReference `"openai-swift-fork`"") {
     Add-DriftError "The app project owns OpenAI directly instead of consuming the local package."

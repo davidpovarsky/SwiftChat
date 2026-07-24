@@ -80,7 +80,9 @@ events and dependency injection around upstream's reduction logic.
 
 The app synchronized group is rooted only at `SwiftChat/`. Shared source is
 under `Sources/`, so Xcode cannot compile it directly into the app target. The
-app links the local `SwiftChat` package product. The drift script rejects
+app links the local `SwiftChatCore`, `SwiftChatUI`, and `SwiftChatOpenAI`
+package products. This avoids a build-target name collision while the public
+umbrella product remains named `SwiftChat`. The drift script rejects
 re-created old source directories, duplicate Swift filenames, duplicate
 resources, and a missing local package reference.
 
