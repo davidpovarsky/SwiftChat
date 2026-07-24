@@ -67,20 +67,22 @@ jobs:
             xcodebuild -list 2>&1
           ) | tee build/logs/xcode-example-list.log
 
-      - name: Build package for iOS Simulator
+      - name: Build package modules for iOS Simulator
         run: |
           set -o pipefail
-          xcodebuild build \
-            -project SwiftChat.xcodeproj \
-            -scheme SwiftChat-Package \
-            -configuration Debug \
-            -sdk iphonesimulator \
-            -destination 'generic/platform=iOS Simulator' \
-            -derivedDataPath build/DerivedData-Package \
-            CODE_SIGNING_ALLOWED=NO \
-            CODE_SIGNING_REQUIRED=NO \
-            CODE_SIGN_IDENTITY="" \
-            2>&1 | tee build/logs/package-ios-build.log
+          for scheme in SwiftChatCore SwiftChatUI SwiftChatOpenAI; do
+            xcodebuild build \
+              -project SwiftChat.xcodeproj \
+              -scheme "$scheme" \
+              -configuration Debug \
+              -sdk iphonesimulator \
+              -destination 'generic/platform=iOS Simulator' \
+              -derivedDataPath "build/DerivedData-Package-$scheme" \
+              CODE_SIGNING_ALLOWED=NO \
+              CODE_SIGNING_REQUIRED=NO \
+              CODE_SIGN_IDENTITY="" \
+              2>&1 | tee "build/logs/package-$scheme-ios-build.log"
+          done
 
       - name: Build original SwiftChat app
         run: |
