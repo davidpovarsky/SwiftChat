@@ -86,6 +86,10 @@ umbrella product remains named `SwiftChat`. The drift script rejects
 re-created old source directories, duplicate Swift filenames, duplicate
 resources, and a missing local package reference.
 
+The OpenAI fork is intentionally pinned to exact version `0.0.4`. Later
+`0.0.x` releases changed generated Responses API types incompatibly despite
+remaining in the same semantic-versioning minor line.
+
 ## Regression comparison
 
 After every sync:

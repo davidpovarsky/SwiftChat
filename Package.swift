@@ -17,7 +17,7 @@ let package = Package(
     dependencies: [
         .package(
             url: "https://github.com/tinfoilsh/openai-swift-fork.git",
-            from: "0.0.4"
+            exact: "0.0.4"
         ),
         .package(
             url: "https://github.com/tinfoilsh/textual",
