@@ -17,12 +17,28 @@ jobs:
     timeout-minutes: 45
 
     steps:
+      - name: Live Activity · refresh
+        uses: davidpovarsky/github-automation/live-refresh@main
+        continue-on-error: true
+        with:
+          event: refresh
+          device_id: ${{ secrets.NOTIFY_DEVICE_ID }}
+          token: ${{ secrets.NOTIFY_DEVICE_TOKEN }}
+          github_token: ${{ github.token }}
       - name: Check out repository
         uses: actions/checkout@v5
         with:
           fetch-depth: 0
           submodules: recursive
 
+      - name: Live Activity · refresh
+        uses: davidpovarsky/github-automation/live-refresh@main
+        continue-on-error: true
+        with:
+          event: refresh
+          device_id: ${{ secrets.NOTIFY_DEVICE_ID }}
+          token: ${{ secrets.NOTIFY_DEVICE_TOKEN }}
+          github_token: ${{ github.token }}
       - name: Record toolchain
         run: |
           mkdir -p build/logs
@@ -30,12 +46,28 @@ jobs:
           swift --version | tee build/logs/swift-version.log
           xcrun simctl list devices available | tee build/logs/simulators.log
 
+      - name: Live Activity · refresh
+        uses: davidpovarsky/github-automation/live-refresh@main
+        continue-on-error: true
+        with:
+          event: refresh
+          device_id: ${{ secrets.NOTIFY_DEVICE_ID }}
+          token: ${{ secrets.NOTIFY_DEVICE_TOKEN }}
+          github_token: ${{ github.token }}
       - name: Check package and upstream layout
         shell: pwsh
         run: |
           ./Scripts/check-upstream-drift.ps1 2>&1 |
             Tee-Object -FilePath build/logs/upstream-drift.log
 
+      - name: Live Activity · refresh
+        uses: davidpovarsky/github-automation/live-refresh@main
+        continue-on-error: true
+        with:
+          event: refresh
+          device_id: ${{ secrets.NOTIFY_DEVICE_ID }}
+          token: ${{ secrets.NOTIFY_DEVICE_TOKEN }}
+          github_token: ${{ github.token }}
       - name: Resolve package dependencies
         run: |
           set -o pipefail
@@ -44,11 +76,27 @@ jobs:
             -project SwiftChat.xcodeproj \
             2>&1 | tee build/logs/xcode-resolve.log
 
+      - name: Live Activity · refresh
+        uses: davidpovarsky/github-automation/live-refresh@main
+        continue-on-error: true
+        with:
+          event: refresh
+          device_id: ${{ secrets.NOTIFY_DEVICE_ID }}
+          token: ${{ secrets.NOTIFY_DEVICE_TOKEN }}
+          github_token: ${{ github.token }}
       - name: Describe package
         run: |
           set -o pipefail
           swift package describe 2>&1 | tee build/logs/package-describe.log
 
+      - name: Live Activity · refresh
+        uses: davidpovarsky/github-automation/live-refresh@main
+        continue-on-error: true
+        with:
+          event: refresh
+          device_id: ${{ secrets.NOTIFY_DEVICE_ID }}
+          token: ${{ secrets.NOTIFY_DEVICE_TOKEN }}
+          github_token: ${{ github.token }}
       - name: Build and test provider-neutral core
         run: |
           set -o pipefail
@@ -57,6 +105,14 @@ jobs:
           swift test --filter SwiftChatCoreTests 2>&1 |
             tee build/logs/swift-test-core.log
 
+      - name: Live Activity · refresh
+        uses: davidpovarsky/github-automation/live-refresh@main
+        continue-on-error: true
+        with:
+          event: refresh
+          device_id: ${{ secrets.NOTIFY_DEVICE_ID }}
+          token: ${{ secrets.NOTIFY_DEVICE_TOKEN }}
+          github_token: ${{ github.token }}
       - name: List Xcode schemes
         run: |
           set -o pipefail
@@ -67,6 +123,14 @@ jobs:
             xcodebuild -list 2>&1
           ) | tee build/logs/xcode-example-list.log
 
+      - name: Live Activity · refresh
+        uses: davidpovarsky/github-automation/live-refresh@main
+        continue-on-error: true
+        with:
+          event: refresh
+          device_id: ${{ secrets.NOTIFY_DEVICE_ID }}
+          token: ${{ secrets.NOTIFY_DEVICE_TOKEN }}
+          github_token: ${{ github.token }}
       - name: Build package modules for iOS Simulator
         run: |
           set -o pipefail
@@ -84,6 +148,14 @@ jobs:
               2>&1 | tee "build/logs/package-$scheme-ios-build.log"
           done
 
+      - name: Live Activity · refresh
+        uses: davidpovarsky/github-automation/live-refresh@main
+        continue-on-error: true
+        with:
+          event: refresh
+          device_id: ${{ secrets.NOTIFY_DEVICE_ID }}
+          token: ${{ secrets.NOTIFY_DEVICE_TOKEN }}
+          github_token: ${{ github.token }}
       - name: Build original SwiftChat app
         run: |
           set -o pipefail
@@ -99,6 +171,14 @@ jobs:
             CODE_SIGN_IDENTITY="" \
             2>&1 | tee build/logs/app-simulator-build.log
 
+      - name: Live Activity · refresh
+        uses: davidpovarsky/github-automation/live-refresh@main
+        continue-on-error: true
+        with:
+          event: refresh
+          device_id: ${{ secrets.NOTIFY_DEVICE_ID }}
+          token: ${{ secrets.NOTIFY_DEVICE_TOKEN }}
+          github_token: ${{ github.token }}
       - name: Build device archive inputs without signing
         run: |
           set -o pipefail
@@ -114,6 +194,14 @@ jobs:
             CODE_SIGN_IDENTITY="" \
             2>&1 | tee build/logs/app-device-build.log
 
+      - name: Live Activity · refresh
+        uses: davidpovarsky/github-automation/live-refresh@main
+        continue-on-error: true
+        with:
+          event: refresh
+          device_id: ${{ secrets.NOTIFY_DEVICE_ID }}
+          token: ${{ secrets.NOTIFY_DEVICE_TOKEN }}
+          github_token: ${{ github.token }}
       - name: Build package example
         working-directory: Examples/PackageExample
         run: |
@@ -129,6 +217,15 @@ jobs:
             CODE_SIGN_IDENTITY="" \
             2>&1 | tee ../../build/logs/example-build.log
 
+      - name: Live Activity · refresh
+        if: always()
+        uses: davidpovarsky/github-automation/live-refresh@main
+        continue-on-error: true
+        with:
+          event: refresh
+          device_id: ${{ secrets.NOTIFY_DEVICE_ID }}
+          token: ${{ secrets.NOTIFY_DEVICE_TOKEN }}
+          github_token: ${{ github.token }}
       - name: Upload build logs
         if: always()
         uses: actions/upload-artifact@v6
