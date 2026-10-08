@@ -1,0 +1,235 @@
+name: Swift package and app
+
+on:
+  push:
+    branches:
+      - codex/package-swiftchat-ui-complete-20260724
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: swiftchat-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  package-app-example:
+    runs-on: macos-26
+    timeout-minutes: 45
+
+    steps:
+      - name: Live Activity · refresh
+        uses: davidpovarsky/github-automation/live-refresh@main
+        continue-on-error: true
+        with:
+          event: refresh
+          device_id: ${{ secrets.NOTIFY_DEVICE_ID }}
+          token: ${{ secrets.NOTIFY_DEVICE_TOKEN }}
+          github_token: ${{ github.token }}
+      - name: Check out repository
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          submodules: recursive
+
+      - name: Live Activity · refresh
+        uses: davidpovarsky/github-automation/live-refresh@main
+        continue-on-error: true
+        with:
+          event: refresh
+          device_id: ${{ secrets.NOTIFY_DEVICE_ID }}
+          token: ${{ secrets.NOTIFY_DEVICE_TOKEN }}
+          github_token: ${{ github.token }}
+      - name: Record toolchain
+        run: |
+          mkdir -p build/logs
+          xcodebuild -version | tee build/logs/xcode-version.log
+          swift --version | tee build/logs/swift-version.log
+          xcrun simctl list devices available | tee build/logs/simulators.log
+
+      - name: Live Activity · refresh
+        uses: davidpovarsky/github-automation/live-refresh@main
+        continue-on-error: true
+        with:
+          event: refresh
+          device_id: ${{ secrets.NOTIFY_DEVICE_ID }}
+          token: ${{ secrets.NOTIFY_DEVICE_TOKEN }}
+          github_token: ${{ github.token }}
+      - name: Check package and upstream layout
+        shell: pwsh
+        run: |
+          ./Scripts/check-upstream-drift.ps1 2>&1 |
+            Tee-Object -FilePath build/logs/upstream-drift.log
+
+      - name: Live Activity · refresh
+        uses: davidpovarsky/github-automation/live-refresh@main
+        continue-on-error: true
+        with:
+          event: refresh
+          device_id: ${{ secrets.NOTIFY_DEVICE_ID }}
+          token: ${{ secrets.NOTIFY_DEVICE_TOKEN }}
+          github_token: ${{ github.token }}
+      - name: Resolve package dependencies
+        run: |
+          set -o pipefail
+          swift package resolve 2>&1 | tee build/logs/package-resolve.log
+          xcodebuild -resolvePackageDependencies \
+            -project SwiftChat.xcodeproj \
+            2>&1 | tee build/logs/xcode-resolve.log
+
+      - name: Live Activity · refresh
+        uses: davidpovarsky/github-automation/live-refresh@main
+        continue-on-error: true
+        with:
+          event: refresh
+          device_id: ${{ secrets.NOTIFY_DEVICE_ID }}
+          token: ${{ secrets.NOTIFY_DEVICE_TOKEN }}
+          github_token: ${{ github.token }}
+      - name: Describe package
+        run: |
+          set -o pipefail
+          swift package describe 2>&1 | tee build/logs/package-describe.log
+
+      - name: Live Activity · refresh
+        uses: davidpovarsky/github-automation/live-refresh@main
+        continue-on-error: true
+        with:
+          event: refresh
+          device_id: ${{ secrets.NOTIFY_DEVICE_ID }}
+          token: ${{ secrets.NOTIFY_DEVICE_TOKEN }}
+          github_token: ${{ github.token }}
+      - name: Build and test provider-neutral core
+        run: |
+          set -o pipefail
+          swift build --target SwiftChatCore 2>&1 |
+            tee build/logs/swift-build-core.log
+          swift test --filter SwiftChatCoreTests 2>&1 |
+            tee build/logs/swift-test-core.log
+
+      - name: Live Activity · refresh
+        uses: davidpovarsky/github-automation/live-refresh@main
+        continue-on-error: true
+        with:
+          event: refresh
+          device_id: ${{ secrets.NOTIFY_DEVICE_ID }}
+          token: ${{ secrets.NOTIFY_DEVICE_TOKEN }}
+          github_token: ${{ github.token }}
+      - name: List Xcode schemes
+        run: |
+          set -o pipefail
+          xcodebuild -list -project SwiftChat.xcodeproj 2>&1 |
+            tee build/logs/xcode-project-list.log
+          (
+            cd Examples/PackageExample
+            xcodebuild -list 2>&1
+          ) | tee build/logs/xcode-example-list.log
+
+      - name: Live Activity · refresh
+        uses: davidpovarsky/github-automation/live-refresh@main
+        continue-on-error: true
+        with:
+          event: refresh
+          device_id: ${{ secrets.NOTIFY_DEVICE_ID }}
+          token: ${{ secrets.NOTIFY_DEVICE_TOKEN }}
+          github_token: ${{ github.token }}
+      - name: Build package modules for iOS Simulator
+        run: |
+          set -o pipefail
+          for scheme in SwiftChatCore SwiftChatUI SwiftChatOpenAI; do
+            xcodebuild build \
+              -project SwiftChat.xcodeproj \
+              -scheme "$scheme" \
+              -configuration Debug \
+              -sdk iphonesimulator \
+              -destination 'generic/platform=iOS Simulator' \
+              -derivedDataPath "build/DerivedData-Package-$scheme" \
+              CODE_SIGNING_ALLOWED=NO \
+              CODE_SIGNING_REQUIRED=NO \
+              CODE_SIGN_IDENTITY="" \
+              2>&1 | tee "build/logs/package-$scheme-ios-build.log"
+          done
+
+      - name: Live Activity · refresh
+        uses: davidpovarsky/github-automation/live-refresh@main
+        continue-on-error: true
+        with:
+          event: refresh
+          device_id: ${{ secrets.NOTIFY_DEVICE_ID }}
+          token: ${{ secrets.NOTIFY_DEVICE_TOKEN }}
+          github_token: ${{ github.token }}
+      - name: Build original SwiftChat app
+        run: |
+          set -o pipefail
+          xcodebuild build \
+            -project SwiftChat.xcodeproj \
+            -scheme SwiftChat \
+            -configuration Debug \
+            -sdk iphonesimulator \
+            -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath build/DerivedData-App \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY="" \
+            2>&1 | tee build/logs/app-simulator-build.log
+
+      - name: Live Activity · refresh
+        uses: davidpovarsky/github-automation/live-refresh@main
+        continue-on-error: true
+        with:
+          event: refresh
+          device_id: ${{ secrets.NOTIFY_DEVICE_ID }}
+          token: ${{ secrets.NOTIFY_DEVICE_TOKEN }}
+          github_token: ${{ github.token }}
+      - name: Build device archive inputs without signing
+        run: |
+          set -o pipefail
+          xcodebuild build \
+            -project SwiftChat.xcodeproj \
+            -scheme SwiftChat \
+            -configuration Release \
+            -sdk iphoneos \
+            -destination 'generic/platform=iOS' \
+            -derivedDataPath build/DerivedData-Device \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY="" \
+            2>&1 | tee build/logs/app-device-build.log
+
+      - name: Live Activity · refresh
+        uses: davidpovarsky/github-automation/live-refresh@main
+        continue-on-error: true
+        with:
+          event: refresh
+          device_id: ${{ secrets.NOTIFY_DEVICE_ID }}
+          token: ${{ secrets.NOTIFY_DEVICE_TOKEN }}
+          github_token: ${{ github.token }}
+      - name: Build package example
+        working-directory: Examples/PackageExample
+        run: |
+          set -o pipefail
+          xcodebuild build \
+            -scheme PackageExample \
+            -configuration Debug \
+            -sdk iphonesimulator \
+            -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath ../../build/DerivedData-Example \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY="" \
+            2>&1 | tee ../../build/logs/example-build.log
+
+      - name: Live Activity · refresh
+        if: always()
+        uses: davidpovarsky/github-automation/live-refresh@main
+        continue-on-error: true
+        with:
+          event: refresh
+          device_id: ${{ secrets.NOTIFY_DEVICE_ID }}
+          token: ${{ secrets.NOTIFY_DEVICE_TOKEN }}
+          github_token: ${{ github.token }}
+      - name: Upload build logs
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: swiftchat-build-logs-${{ github.run_attempt }}
+          path: build/logs
+          if-no-files-found: warn
